@@ -1,0 +1,18 @@
+services:
+  db:
+    image: postgres:16
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: propstream
+    ports: ["5432:5432"]
+  backend:
+    build: ./apps/backend
+    environment:
+      DATABASE_URL: postgresql://postgres:postgres@db:5432/propstream
+    ports: ["4000:4000"]
+    depends_on: [db]
+  frontend:
+    build: ./apps/frontend
+    ports: ["3000:80"]
+    depends_on: [backend]

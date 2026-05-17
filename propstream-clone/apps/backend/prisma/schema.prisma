@@ -1,0 +1,31 @@
+generator client { provider = "prisma-client-js" }
+datasource db { provider = "postgresql" url = env("DATABASE_URL") }
+
+model State { code String @id @db.Char(2) name String criteria StateCriteria? properties Property[] }
+model StateCriteria {
+  id String @id @default(uuid())
+  stateCode String @unique
+  state State @relation(fields:[stateCode], references:[code])
+  foreclosureType String
+  leaseOptionClass String
+  ownerFinanceClass String
+  redemptionClass String
+  homesteadStrength String
+  landlordTenantClass String
+}
+model Property {
+  id String @id @default(uuid())
+  stateCode String
+  state State @relation(fields:[stateCode], references:[code])
+  mode String
+  residentialType String?
+  commercialType String?
+  address String
+  city String
+  zip String
+  marketDistressScore Float?
+  occupancyFlags OccupancyFlag[]
+  scores PropertyScore[]
+}
+model OccupancyFlag { id String @id @default(uuid()) propertyId String property Property @relation(fields:[propertyId], references:[id]) flag String }
+model PropertyScore { id String @id @default(uuid()) propertyId String property Property @relation(fields:[propertyId], references:[id]) riskSlider Int preforeclosureBase Float leaseOptionBase Float ownerFinanceBase Float investorFriendlyBase Float investmentProbability Float finalAdjustedInvestmentScore Float createdAt DateTime @default(now()) }
